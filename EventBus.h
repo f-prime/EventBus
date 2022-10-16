@@ -7,25 +7,25 @@
 
 typedef uint32_t EventBusUID;
 
-template<typename EventData_T>
+template<typename... CallbackParams>
 class EventBus {
   private:
     EventBusUID event_bus_unique_id = 0;
-    std::map<EventBusUID, std::function<void(EventData_T*)>> subscribers; 
+    std::map<EventBusUID, std::function<void(CallbackParams...)>> subscribers; 
   
   public:
-    void broadcast(EventData_T* e) {
+    void broadcast(CallbackParams... args) {
       for (auto& sub : subscribers) {
         auto callback = sub.second;
-        callback(e);
+        callback(args...);
       }
     }
 
-    void publish(EventData_T* e) {
-      broadcast(e);
+    void publish(CallbackParams... e) {
+      broadcast(e...);
     }
 
-    EventBusUID subscribe(std::function<void(EventData_T*)> callback) {
+    EventBusUID subscribe(std::function<void(CallbackParams...)> callback) {
       event_bus_unique_id++;
       subscribers[event_bus_unique_id] = callback;
       return event_bus_unique_id;
