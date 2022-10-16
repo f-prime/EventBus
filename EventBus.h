@@ -3,7 +3,6 @@
 
 #include <_types/_uint32_t.h>
 #include <functional>
-#include <queue>
 #include <map>
 
 typedef uint32_t EventBusUID;
@@ -11,23 +10,10 @@ typedef uint32_t EventBusUID;
 template<typename EventData_T>
 class EventBus {
   private:
-    std::queue<EventData_T*> events;
     EventBusUID event_bus_unique_id = 0;
     std::map<EventBusUID, std::function<void(EventData_T*)>> subscribers; 
   
   public:
-    void flush() {
-      while (next());
-    }
-
-    bool next() {
-      if (events.empty()) return false;
-      auto e = events.front();
-      broadcast(e);
-      events.pop();
-      return true;
-    }
-
     void broadcast(EventData_T* e) {
       for (auto& sub : subscribers) {
         auto callback = sub.second;
@@ -36,7 +22,7 @@ class EventBus {
     }
 
     void publish(EventData_T* e) {
-      events.push(e);
+      broadcast(e);
     }
 
     EventBusUID subscribe(std::function<void(EventData_T*)> callback) {
