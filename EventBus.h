@@ -1,7 +1,6 @@
 #ifndef H_EVENT_BUS
 #define H_EVENT_BUS
 
-#include <_types/_uint32_t.h>
 #include <functional>
 #include <map>
 
@@ -10,7 +9,7 @@ typedef uint32_t EventBusUID;
 template<typename... CallbackParams>
 class EventBus {
   private:
-    EventBusUID event_bus_unique_id = 0;
+    EventBusUID id = 0;
     std::map<EventBusUID, std::function<void(CallbackParams...)>> subscribers; 
   
   public:
@@ -26,9 +25,9 @@ class EventBus {
     }
 
     EventBusUID subscribe(std::function<void(CallbackParams...)> callback) {
-      event_bus_unique_id++;
-      subscribers[event_bus_unique_id] = callback;
-      return event_bus_unique_id;
+      id++;
+      subscribers[id] = callback;
+      return id;
     }
 
     void unsubscribe(uint32_t id) {
